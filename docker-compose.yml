@@ -8,6 +8,7 @@ services:
     tty: true
     volumes:
       - ./frontend/ws:/home/node/ws
+      - /home/node/ws/node_modules
   backend:
     build:
       context: backend
@@ -16,18 +17,3 @@ services:
     tty: true
     volumes:
       - ./backend/ws:/home/user/ws
-  torch:
-    build:
-      context: torch
-    ports:
-      - 8082:8080
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    tty: true
-    volumes:
-      - ./torch/ws:/home/user/ws
