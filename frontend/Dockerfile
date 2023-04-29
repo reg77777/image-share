@@ -1,8 +1,10 @@
 FROM node:16.15.0-alpine
+RUN mkdir -p /home/node/ws
+RUN chown node:node /home/node/ws
 WORKDIR /home/node/ws
-COPY ws/package*.json .
-RUN chown -R node:node package*.json
-RUN npm install
-RUN mkdir -p node_modules/.cache
-RUN chown -R node node_modules/.cache
+COPY ws/package*.json ./
+RUN chown node:node /home/node/ws/package*.json
+RUN chown -R $(whoami) $(npm config get prefix)/lib/node_modules
 USER node
+RUN npm install
+RUN npm install npm@9.6.5

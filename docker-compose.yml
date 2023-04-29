@@ -9,6 +9,7 @@ services:
     volumes:
       - ./frontend/ws:/home/node/ws
       - /home/node/ws/node_modules
+    entrypoint: "npm start"
   backend:
     build:
       context: backend
