@@ -1,20 +1,39 @@
 version: "3.0"
 services:
-  frontend:
-    build:
-      context: frontend
-    ports:
-      - 8080:3000
-    tty: true
-    volumes:
-      - ./frontend/ws:/home/node/ws
-      - /home/node/ws/node_modules
-    entrypoint: "npm start"
-  backend:
-    build:
-      context: backend
-    ports:
-      - 8081:8080
-    tty: true
-    volumes:
-      - ./backend/ws:/home/user/ws
+    frontend:
+        build:
+            context: frontend
+        ports:
+            - 8080:3000
+        tty: true
+        volumes:
+            - ./frontend/ws:/home/node/ws
+            - /home/node/ws/node_modules
+        entrypoint: "npm start"
+    backend:
+        build:
+          context: backend
+        ports:
+            - 8081:3000
+        tty: true
+        volumes:
+            - ./backend/ws:/home/user/ws
+        networks:
+            - network
+    db:
+        container_name: db
+        environment:
+            BIND-ADDRESS: 0.0.0.0
+        build:
+            context: db
+        ports:
+            - 8082:3306
+        tty: true
+        volumes:
+            - ./db/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
+            - ./db/config:/etc/mysql/conf.d/:ro
+        networks:
+            - network
+networks:
+    network:
+        external: true

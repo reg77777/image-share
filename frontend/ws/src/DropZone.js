@@ -2,6 +2,7 @@ import React from "react";
 import Dropzone from "react-dropzone";
 import {Button,Container,makeStyles} from "@mui/material";
 import axios from "axios";
+import {Buffer} from 'buffer';
 
 axios.defaults.baseURL='http://localhost:8081'
 
@@ -11,7 +12,9 @@ class DropZone extends React.Component{
     };
 
     state={
-        filenames:[],
+        extension:"",
+        image:"",
+        title:"",
         dropzone_color: "blue"
     };
 
@@ -39,25 +42,43 @@ class DropZone extends React.Component{
         }))
     };
 
-    onDrop=(files)=>{
-        axios.get("http://localhost:8081")
+    onDrop=(file)=>{
+        axios.post("http://localhost:8081/upload",{data:this.state.image,extension:this.state.extension,title:this.state.title})
             .then(res=>{
                 console.log(res)
             })
             .catch(err=>{
                 console.log(err)
             });
-        for(let i=0;i<files.length;i++){
-            console.log(files[i])
-            this.setState(state=>({
-                filenames: [...state.filenames,URL.createObjectURL(files[i])]
-            }))
-        }
+        /*
+        this.setState(state=>({
+            filenames: [...state.filenames,URL.createObjectURL(file)]
+        }))
+        */
     };
+
+    onChange=(e)=>{
+        var reader=new FileReader;
+        reader.readAsDataURL(e.target.files[0])
+        var extension=e.target.files[0].name.split('.').pop()
+        var base_name=e.target.files[0].name.split('.').shift()
+        reader.onload=()=>{
+            var val = reader.result.replace(/data:.*\/.*;base64,/, '');
+            this.setState({image:val,extension:extension,title:base_name})
+            console.log(val)
+        }
+    }
 
     render(){
         return(
+            <div>
+                <form onSubmit={this.onDrop}>
+                    <input type="file" name="file" onChange={this.onChange}/>
+                    <input type="submit"/>
+                </form>
+            {/*
             <div class='container' style={this.dropzoneStyleCreator(this.state.dropzone_color)} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+                <input type="submit"/>
                 <Dropzone onDrop={this.onDrop} noClick={true}>
                     {({getRootProps,getInputProps})=> (
                         <section className="container">
@@ -83,6 +104,9 @@ class DropZone extends React.Component{
                     )}
                 </Dropzone>
             </div>
+            */}
+            </div>
+
         )
     };
 }
