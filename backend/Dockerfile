@@ -8,4 +8,5 @@ RUN groupadd -g 1000 group
 RUN useradd -m -u 1000 -g 1000 user
 USER user
 WORKDIR /home/user/ws
-RUN echo "export PATH=$PATH:/usr/local/go/bin" >> /home/user/.bashrc
+ENV PATH $PATH:/usr/local/go/bin
+#RUN echo "export PATH=$PATH:/usr/local/go/bin" >> /home/user/.bashrc

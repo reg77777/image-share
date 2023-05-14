@@ -20,6 +20,9 @@ services:
             - ./backend/ws:/home/user/ws
         networks:
             - network
+        entrypoint: "go run main"
+        depends_on:
+            - db
     db:
         container_name: db
         environment:
@@ -34,6 +37,24 @@ services:
             - ./db/config:/etc/mysql/conf.d/:ro
         networks:
             - network
+    torch:
+        build:
+            context: torch
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: 1
+                          capabilities: [gpu]
+        ports:
+            - 8083:8000
+        tty: true
+        volumes:
+            - ./torch/ws:/home/user/ws
+        networks:
+            - network
+        entrypoint: "python3 main.py"
 networks:
     network:
         external: true
