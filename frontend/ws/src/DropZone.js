@@ -4,7 +4,7 @@ import {Button,Container,makeStyles} from "@mui/material";
 import axios from "axios";
 import {Buffer} from 'buffer';
 
-//post_url='http://133.167.112.49:8081/'
+//const post_url='http://133.167.112.49:8081/'
 const post_url='http://localhost:8081'
 
 class DropZone extends React.Component{
@@ -79,7 +79,7 @@ class DropZone extends React.Component{
                 <div {...getRootProps({className: 'dropzone'})}>
                   <input {...getInputProps()} height="500px"/>
                   <p onDragEnter={this.onDragEnter} onMouseLeave={this.onMouseLeave} onDragLeave={this.onMouseLeave}  style={this.make_style(this.state.mouseenter)}>
-                ここにファイルをドラッグアンドドロップしてください
+                ここに画像をドラッグアンドドロップしてください
                 </p>
                 </div>
               </section>
