@@ -29,8 +29,6 @@ services:
             BIND-ADDRESS: 0.0.0.0
         build:
             context: db
-        ports:
-            - 8082:3306
         tty: true
         volumes:
             - ./db/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
@@ -38,6 +36,7 @@ services:
         networks:
             - network
     torch:
+        container_name: torch
         build:
             context: torch
         deploy:
@@ -47,8 +46,6 @@ services:
                         - driver: nvidia
                           count: 1
                           capabilities: [gpu]
-        ports:
-            - 8083:8000
         tty: true
         volumes:
             - ./torch/ws:/home/user/ws

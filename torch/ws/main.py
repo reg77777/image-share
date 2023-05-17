@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 from torchvision.datasets.utils import download_url
 
+
 def get_device(use_gpu):
     if use_gpu and torch.cuda.is_available():
         # これを有効にしないと、計算した勾配が毎回異なり、再現性が担保できない。
@@ -63,9 +64,13 @@ def post_item():
     print("posted")
     json_data=request.get_json()
     data=base64.b64decode(json_data["Data"])
-    with open("./tmp."+json_data["Extension"],mode="wb") as f:
+    filename="./tmp."+json_data["Extension"]
+    print(filename)
+    with open(filename,mode="wb") as f:
+        f.truncate(0)
+        f.seek(0)
         f.write(data)
-    img = Image.open("./tmp."+json_data["Extension"])
+    img = Image.open(filename).convert("RGB")
     inputs = transform(img)
     inputs = inputs.unsqueeze(0).to(device)
     model.eval()

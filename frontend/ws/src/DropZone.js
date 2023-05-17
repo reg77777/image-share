@@ -4,7 +4,8 @@ import {Button,Container,makeStyles} from "@mui/material";
 import axios from "axios";
 import {Buffer} from 'buffer';
 
-axios.defaults.baseURL='http://localhost:8081'
+//post_url='http://133.167.112.49:8081/'
+const post_url='http://localhost:8081'
 
 class DropZone extends React.Component{
     constructor(props){
@@ -15,7 +16,7 @@ class DropZone extends React.Component{
         extension:"",
         image:"",
         title:"",
-        dropzone_color: "blue"
+        mouseenter:false,
     };
 
     dropzoneStyleCreator = (color) => {
@@ -30,83 +31,60 @@ class DropZone extends React.Component{
         }
     };
 
-    onMouseEnter=()=>{
-        this.setState(state=>({
-            dropzone_color: "red"
-        }))
+    onDrop=(files)=>{
+        for(let i=0;i<files.length;i++){
+            var file=files[i]
+            var reader=new FileReader
+            reader.readAsDataURL(file)
+            var s=file.name
+            var extension=s.split('.').pop()
+            var base_name=file.name.split('.').shift()
+            reader.onload=()=>{
+                var val = reader.result.replace(/data:.*\/.*;base64,/, '');
+
+                axios.post(post_url+'/upload',{data:val,extension:extension,title:s})
+            }
+        }
     };
+
+    onDragEnter=()=>{
+        this.setState({mouseenter:true})
+    }
 
     onMouseLeave=()=>{
-        this.setState(state=>({
-            dropzone_color: "blue"
-        }))
-    };
+        this.setState({mouseenter:false})
+    }
 
-    onDrop=(file)=>{
-        axios.post("http://localhost:8081/upload",{data:this.state.image,extension:this.state.extension,title:this.state.title})
-            .then(res=>{
-                console.log(res)
-            })
-            .catch(err=>{
-                console.log(err)
-            });
-        /*
-        this.setState(state=>({
-            filenames: [...state.filenames,URL.createObjectURL(file)]
-        }))
-        */
-    };
-
-    onChange=(e)=>{
-        var reader=new FileReader;
-        reader.readAsDataURL(e.target.files[0])
-        var extension=e.target.files[0].name.split('.').pop()
-        var base_name=e.target.files[0].name.split('.').shift()
-        reader.onload=()=>{
-            var val = reader.result.replace(/data:.*\/.*;base64,/, '');
-            this.setState({image:val,extension:extension,title:base_name})
-            console.log(val)
+    make_style=(mouseenter)=>{
+        var color="";
+        if(mouseenter){
+            color="red"
+        }
+        else{
+            color="black"
+        }
+        return {
+            padding:"100px",
+            textAlign:"center",
+            border:"2px solid",
+            color:color,
         }
     }
 
     render(){
         return(
-            <div>
-                <form onSubmit={this.onDrop}>
-                    <input type="file" name="file" onChange={this.onChange}/>
-                    <input type="submit"/>
-                </form>
-            {/*
-            <div class='container' style={this.dropzoneStyleCreator(this.state.dropzone_color)} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <input type="submit"/>
-                <Dropzone onDrop={this.onDrop} noClick={true}>
-                    {({getRootProps,getInputProps})=> (
-                        <section className="container">
-                            <div {...getRootProps({className:'dropzone'})}>
-                                <input {...getInputProps()} />
-                                <p> Drag image here </p>
-                            </div>
-                            <aside>
-                                <h4>
-                                    files
-                                    {this.state.dropzone_color}
-                                </h4>
-                                <ul>
-                                    {this.state.filenames.map(file=>
-                                        <li>
-                                            <p>{file}</p>
-                                            <img src={file}/>
-                                        </li>)
-                                    }
-                                </ul>
-                            </aside>
-                        </section>
-                    )}
-                </Dropzone>
-            </div>
-            */}
-            </div>
-
+          <Dropzone onDrop={this.onDrop} noClick={true}>
+            {({getRootProps, getInputProps}) => (
+              <section className="container">
+                <div {...getRootProps({className: 'dropzone'})}>
+                  <input {...getInputProps()} height="500px"/>
+                  <p onDragEnter={this.onDragEnter} onMouseLeave={this.onMouseLeave} onDragLeave={this.onMouseLeave}  style={this.make_style(this.state.mouseenter)}>
+                ここにファイルをドラッグアンドドロップしてください
+                </p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
         )
     };
 }

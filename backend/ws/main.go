@@ -32,7 +32,7 @@ func main() {
     api.Use(&rest.CorsMiddleware{
         RejectNonCorsRequests: false,
         OriginValidator: func(origin string, request *rest.Request) bool {
-            return origin == "http://localhost:8080"
+            return true
         },
         AllowedMethods: []string{"GET", "POST", "OPTIONS"},
         AllowedHeaders: []string{"Accept","Authorization","content-type"},
@@ -81,13 +81,14 @@ func Upload(w rest.ResponseWriter,r *rest.Request){
 
     fmt.Println("path",path)
     fmt.Println("id",id)
+    fmt.Println("Ex",image.Extension)
 
     post_image:=&PostImage{Data:image.Data,Extension:image.Extension}
     jsonString,err:=json.Marshal(post_image)
     if err!=nil{
         fmt.Println("jsonString error")
     }
-    post_res,err:=http.Post("http://172.21.0.3:80","application/json",bytes.NewBuffer(jsonString))
+    post_res,err:=http.Post("http://torch:80","application/json",bytes.NewBuffer(jsonString))
     defer post_res.Body.Close()
 
     if err!=nil{
@@ -105,23 +106,51 @@ func Upload(w rest.ResponseWriter,r *rest.Request){
 }
 
 type Image struct{
-    id int
-    title string
-    image_path string
-    category string
-    created_at string
+    Id int
+    Title string
+    Data string
+    Image_path string
+    Category string
+    Created_at string
 }
 
 func Get(w rest.ResponseWriter,r *rest.Request){
+    fmt.Println("get")
     rows,err:=db.Query("SELECT * FROM images")
     if err!=nil{
         fmt.Println("error")
     }
     defer rows.Close()
+    images:=[]Image{}
     for rows.Next(){
         image:=Image{}
-        rows.Scan(&image.id,&image.title,&image.image_path,&image.category,&image.created_at)
-        fmt.Println(image)
+        rows.Scan(&image.Id,&image.Title,&image.Image_path,&image.Category,&image.Created_at)
+
+        if image.Title==""{
+            continue
+        }
+        if image.Image_path==""{
+            continue
+        }
+        if image.Category==""{
+            continue
+        }
+
+        file,err:=os.Open(image.Image_path)
+        if err!=nil{
+            continue
+        }
+        fi,_:=file.Stat()
+        size:=fi.Size()
+        if size==0{
+            continue
+        }
+        buf:=make([]byte,size)
+        file.Read(buf)
+        data:=base64.StdEncoding.EncodeToString(buf)
+        image.Data=data
+
+        images=append(images,image)
     }
-    w.WriteJson("hello")
+    w.WriteJson(&images)
 }
