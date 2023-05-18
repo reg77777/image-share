@@ -4,7 +4,7 @@ import {Button,Container,makeStyles} from "@mui/material";
 import axios from "axios";
 import {Buffer} from 'buffer';
 
-//const post_url='http://133.167.112.49:8081/'
+//const post_url='http://133.167.112.49:8081'
 const post_url='http://localhost:8081'
 
 class DropZone extends React.Component{
