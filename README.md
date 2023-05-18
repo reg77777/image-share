@@ -4,5 +4,4 @@
 
 以下はアプリのスクリーンショットです
 
-|![スクリーンショット 2023-05-18 020358](https://github.com/reg77777/image-share/assets/29976655/b863782d-36ec-4882-a379-cc525a10a42c)|
-|:-:|
+![スクリーンショット 2023-05-18 020358](https://github.com/reg77777/image-share/assets/29976655/aabe11d9-e901-4691-bbf1-ab1d8288407b)
