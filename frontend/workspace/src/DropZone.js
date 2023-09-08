@@ -43,6 +43,9 @@ class DropZone extends React.Component{
                 var val = reader.result.replace(/data:.*\/.*;base64,/, '');
 
                 axios.post(post_url+'/upload',{data:val,extension:extension,title:s})
+                    .then(res=>{
+                        this.props.get()
+                    })
             }
         }
     };
