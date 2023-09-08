@@ -1,4 +1,5 @@
-FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
+#FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
+FROM ubuntu:20.04
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
