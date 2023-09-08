@@ -7,8 +7,8 @@ services:
             - 8080:3000
         tty: true
         volumes:
-            - ./frontend/ws:/home/node/ws
-            - /home/node/ws/node_modules
+            - ./frontend/workspace:/home/node/workspace
+            - /home/node/workspace/node_modules
         entrypoint: "npm start"
     backend:
         build:
@@ -17,7 +17,7 @@ services:
             - 8081:3000
         tty: true
         volumes:
-            - ./backend/ws:/home/user/ws
+            - ./backend/workspace:/home/user/workspace
         networks:
             - network
         entrypoint: "go run main"
@@ -48,7 +48,7 @@ services:
                           capabilities: [gpu]
         tty: true
         volumes:
-            - ./torch/ws:/home/user/ws
+            - ./torch/workspace:/home/user/workspace
         networks:
             - network
         entrypoint: "python3 main.py"

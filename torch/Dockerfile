@@ -12,4 +12,4 @@ RUN apt install -y wget tar
 RUN groupadd -g 1000 group
 RUN useradd -m -u 1000 -g 1000 user
 USER user
-WORKDIR /home/user/ws
+WORKDIR /home/user/workspace
