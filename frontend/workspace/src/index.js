@@ -38,21 +38,8 @@ class App extends React.Component{
                 res.data.slice(0).reverse().map(data=>{
                     images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data})
                 })
-                console.log(images)
                 this.setState({images:images})
             })
-            .catch(err=>{
-                console.log("get error")
-            })
-    }
-
-    componentDidMount() {
-        this.intervalId=setInterval(this.get.bind(this),1000);
-
-    }
-
-    componentWillUnmount(){
-        clearInterval(this.intervalId);
     }
 
     render(){
@@ -67,7 +54,7 @@ class App extends React.Component{
                         </Toolbar>
                     </AppBar>
                 </header>
-                <DropZone/>
+                <DropZone get={this.get} />
                 {this.state.images.map(image => (
                 <div key={image.objectID} style={{padding:"30px"}}>
                     <figure style={{
