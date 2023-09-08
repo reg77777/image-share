@@ -21,7 +21,9 @@ def get_device(use_gpu):
 
 
 # デバイスを選択する。
-device = get_device(use_gpu=True)
+#device = get_device(use_gpu=True)
+device = get_device(use_gpu=False)
+print("device:",device)
 
 model = torchvision.models.resnet50(pretrained=True).to(device)
 
@@ -81,6 +83,7 @@ def post_item():
     for probs, indices in zip(batch_probs, batch_indices):
         ans=get_classes()[indices[0]]
     print(ans)
+    print('device:',device)
     return ans
 
 @app.route("/test",methods=["GET"])
