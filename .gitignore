@@ -2,3 +2,6 @@ node_modules
 images
 *.swp
 *tmp*
+.env*
+https
+.well-known

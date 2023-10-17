@@ -1,20 +1,36 @@
 version: "3.0"
 services:
+    nginx:
+      image: nginx:latest
+      container_name: nginx
+      restart: always
+      ports:
+        - "443:443"
+      volumes:
+        - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        - ./nginx/https/https.crt:/etc/nginx/conf.d/https.crt
+        - ./nginx/https/https.key:/etc/nginx/conf.d/https.key
+      networks:
+        - network
     frontend:
+        restart: always
         build:
             context: frontend
-        ports:
-            - 8080:3000
+        #ports:
+        #    - 8080:3000
         tty: true
         volumes:
             - ./frontend/workspace:/home/node/workspace
             - /home/node/workspace/node_modules
         entrypoint: "npm start"
+        networks:
+            - network
     backend:
+        restart: always
         build:
           context: backend
-        ports:
-            - 8081:3000
+        #ports:
+        #    - 8081:3000
         tty: true
         volumes:
             - ./backend/workspace:/home/user/workspace
@@ -24,28 +40,23 @@ services:
         depends_on:
             - db
     db:
+        restart: always
         container_name: db
-        environment:
-            BIND-ADDRESS: 0.0.0.0
         build:
             context: db
         tty: true
+        ports:
+            - 3306:3306
         volumes:
             - ./db/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
             - ./db/config:/etc/mysql/conf.d/:ro
         networks:
             - network
     torch:
+        restart: always
         container_name: torch
         build:
             context: torch
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - driver: nvidia
-                          count: 1
-                          capabilities: [gpu]
         tty: true
         volumes:
             - ./torch/workspace:/home/user/workspace

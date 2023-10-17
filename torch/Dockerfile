@@ -7,7 +7,8 @@ RUN apt-get upgrade -y
 RUN apt-get install -y tzdata
 ENV TZ=Asia/Tokyo
 RUN apt-get install -y python3 python3-pip
-RUN pip3 install torch torchvision
+RUN pip3 install --no-cache-dir torch
+RUN pip3 install torchvision
 RUN pip3 install flask flask_cors pydantic
 RUN apt install -y wget tar
 RUN groupadd -g 1000 group

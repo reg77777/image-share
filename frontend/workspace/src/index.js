@@ -7,9 +7,6 @@ import Typography from '@mui/material/Typography';
 import axios from "axios";
 import {Buffer} from "buffer";
 
-const get_url='http://133.167.112.49:8081'
-//const get_url='http://localhost:8081'
-
 class App extends React.Component{
     state={
         images:[],
@@ -17,7 +14,7 @@ class App extends React.Component{
 
     constructor(props){
         super(props);
-        axios.get(get_url)
+        axios.get(process.env.REACT_APP_GET_URL)
             .then(res=>{
                 var images=[]
                 res.data.slice(0).reverse().map(data=>{
@@ -32,7 +29,7 @@ class App extends React.Component{
     };
 
     get=()=>{
-        axios.get(get_url)
+        axios.get(process.env.REACT_APP_GET_URL)
             .then(res=>{
                 var images=[]
                 res.data.slice(0).reverse().map(data=>{

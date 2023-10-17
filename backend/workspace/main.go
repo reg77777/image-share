@@ -13,6 +13,7 @@ import (
     "bytes"
     "encoding/json"
     "io"
+    "time"
 )
 
 var db *sql.DB
@@ -23,9 +24,15 @@ func main() {
     if err != nil {
         fmt.Println("setup error");
     }
-    err=db.Ping()
-    if err != nil {
-        fmt.Println("db error");
+    for{
+        err=db.Ping()
+        if err != nil {
+            fmt.Println("wait db");
+        } else {
+			fmt.Println("db is ok");
+			break
+		}
+		time.Sleep(1*time.Second)
     }
 
     api := rest.NewApi()
@@ -41,9 +48,10 @@ func main() {
     })
     router,_:=rest.MakeRouter(
         rest.Post("/upload",Upload),
-        rest.Get("/",Get),
+		rest.Get("/get",Get),
     )
     api.SetApp(router)
+    fmt.Println("start api")
     log.Fatal(http.ListenAndServe(":3000", api.MakeHandler()))
 }
 
@@ -125,24 +133,30 @@ func Get(w rest.ResponseWriter,r *rest.Request){
     for rows.Next(){
         image:=Image{}
         rows.Scan(&image.Id,&image.Title,&image.Image_path,&image.Category,&image.Created_at)
+	fmt.Println(image)
 
         if image.Title==""{
+	    fmt.Println("Title is None")
             continue
         }
         if image.Image_path==""{
+	    fmt.Println("Image_path is None")
             continue
         }
         if image.Category==""{
+	    fmt.Println("category is none")
             continue
         }
 
         file,err:=os.Open(image.Image_path)
         if err!=nil{
+	    fmt.Println("file can not open")
             continue
         }
         fi,_:=file.Stat()
         size:=fi.Size()
         if size==0{
+	    fmt.Println("file size is 0")
             continue
         }
         buf:=make([]byte,size)

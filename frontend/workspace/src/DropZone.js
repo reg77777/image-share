@@ -4,9 +4,6 @@ import {Button,Container,makeStyles} from "@mui/material";
 import axios from "axios";
 import {Buffer} from 'buffer';
 
-const post_url='http://133.167.112.49:8081'
-//const post_url='http://localhost:8081'
-
 class DropZone extends React.Component{
     constructor(props){
         super(props);
@@ -42,7 +39,7 @@ class DropZone extends React.Component{
             reader.onload=()=>{
                 var val = reader.result.replace(/data:.*\/.*;base64,/, '');
 
-                axios.post(post_url+'/upload',{data:val,extension:extension,title:s})
+                axios.post(process.env.REACT_APP_POST_URL,{data:val,extension:extension,title:s})
                     .then(res=>{
                         this.props.get()
                     })

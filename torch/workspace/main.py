@@ -13,14 +13,12 @@ from torchvision.datasets.utils import download_url
 
 def get_device(use_gpu):
     if use_gpu and torch.cuda.is_available():
-        # これを有効にしないと、計算した勾配が毎回異なり、再現性が担保できない。
         torch.backends.cudnn.deterministic = True
         return torch.device("cuda")
     else:
         return torch.device("cpu")
 
 
-# デバイスを選択する。
 #device = get_device(use_gpu=True)
 device = get_device(use_gpu=False)
 print("device:",device)
@@ -29,20 +27,18 @@ model = torchvision.models.resnet50(pretrained=True).to(device)
 
 transform = transforms.Compose(
     [
-        transforms.Resize(256),  # (256, 256) で切り抜く。
-        transforms.CenterCrop(224),  # 画像の中心に合わせて、(224, 224) で切り抜く
-        transforms.ToTensor(),  # テンソルにする。
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-        ),  # 標準化する。
+        ),
     ]
 )
 def get_classes():
     if not Path("data/imagenet_class_index.json").exists():
-        # ファイルが存在しない場合はダウンロードする。
         download_url("https://git.io/JebAs", "data", "imagenet_class_index.json")
 
-    # クラス一覧を読み込む。
     with open("data/imagenet_class_index.json") as f:
         data = json.load(f)
         class_names = [x["ja"] for x in data]
