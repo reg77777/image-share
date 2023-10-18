@@ -26,6 +26,29 @@ class App extends React.Component{
             .catch(err=>{
                 console.log("get error")
             })
+        setInterval(() => {
+            axios.get(process.env.REACT_APP_GET_NUMBER_URL)
+                .then(res=>{
+                    var n=res.data
+                    if(this.state.images.length<n){
+                        axios.get(process.env.REACT_APP_GET_URL)
+                            .then(res=>{
+                                var images=[]
+                                res.data.slice(0).reverse().map(data=>{
+                                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data})
+                                })
+                                console.log(images)
+                                this.setState({images:images})
+                            })
+                            .catch(err=>{
+                                console.log("get error")
+                            })
+                    }
+                })
+                .catch(err=>{
+                    console.log("get num error")
+                })
+            },500);
     };
 
     get=()=>{
@@ -61,9 +84,9 @@ class App extends React.Component{
                         maxWidth:"220px",
                         margin:"auto"
                     }}>
-                    <div style={{textAlign:"center"}}>
-                        <img src={image.Data} width="500px"/>
-                    </div>
+                        <div style={{textAlign:"center"}}>
+                            <img src={image.Data} width="500px"/>
+                        </div>
                         <figcaption style={{backgroundColor:"#222", color:"#fff", font:"italic smaller sans-serif", padding:"3px", textAlign:"center",}}>{image.Category}</figcaption>
                     </figure>
                 </div>

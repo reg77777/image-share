@@ -49,6 +49,7 @@ func main() {
     router,_:=rest.MakeRouter(
         rest.Post("/upload",Upload),
 		rest.Get("/get",Get),
+		rest.Get("/getnum",Getnum),
     )
     api.SetApp(router)
     fmt.Println("start api")
@@ -122,6 +123,22 @@ type Image struct{
     Created_at string
 }
 
+func Getnum(w rest.ResponseWriter,r *rest.Request){
+	fmt.Println("get num")
+	rows,err:=db.Query("SELECT COUNT(*) FROM images")
+
+	if err!=nil{
+		fmt.Println("error")
+	}else{
+		var count int
+		for rows.Next(){
+			rows.Scan(&count)
+		}
+		fmt.Println(count)
+		w.WriteJson(&count)
+	}
+}
+
 func Get(w rest.ResponseWriter,r *rest.Request){
     fmt.Println("get")
     rows,err:=db.Query("SELECT * FROM images")
@@ -133,7 +150,7 @@ func Get(w rest.ResponseWriter,r *rest.Request){
     for rows.Next(){
         image:=Image{}
         rows.Scan(&image.Id,&image.Title,&image.Image_path,&image.Category,&image.Created_at)
-	fmt.Println(image)
+		fmt.Println(image)
 
         if image.Title==""{
 	    fmt.Println("Title is None")
