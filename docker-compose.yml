@@ -16,8 +16,6 @@ services:
         restart: always
         build:
             context: frontend
-        #ports:
-        #    - 8080:3000
         tty: true
         volumes:
             - ./frontend/workspace:/home/node/workspace
@@ -29,8 +27,6 @@ services:
         restart: always
         build:
           context: backend
-        #ports:
-        #    - 8081:3000
         tty: true
         volumes:
             - ./backend/workspace:/home/user/workspace
