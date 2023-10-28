@@ -5,3 +5,4 @@ images
 .env*
 https
 .well-known
+grafana/grafana

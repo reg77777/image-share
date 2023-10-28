@@ -18,9 +18,8 @@ class App extends React.Component{
             .then(res=>{
                 var images=[]
                 res.data.slice(0).reverse().map(data=>{
-                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data})
+                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data,post_user:data.Post_user})
                 })
-                console.log(images)
                 this.setState({images:images})
             })
             .catch(err=>{
@@ -35,7 +34,7 @@ class App extends React.Component{
                             .then(res=>{
                                 var images=[]
                                 res.data.slice(0).reverse().map(data=>{
-                                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data})
+                                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data,post_user:data.Post_user})
                                 })
                                 console.log(images)
                                 this.setState({images:images})
@@ -56,7 +55,7 @@ class App extends React.Component{
             .then(res=>{
                 var images=[]
                 res.data.slice(0).reverse().map(data=>{
-                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data})
+                    images.push({Category:data.Category,Data:"data:image/png;base64,"+data.Data,post_user:data.Post_user})
                 })
                 this.setState({images:images})
             })
@@ -84,6 +83,7 @@ class App extends React.Component{
                         maxWidth:"220px",
                         margin:"auto"
                     }}>
+                        <div>投稿者 {image.post_user} さん</div>
                         <div style={{textAlign:"center"}}>
                             <img src={image.Data} width="500px"/>
                         </div>

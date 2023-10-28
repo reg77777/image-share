@@ -14,11 +14,14 @@ import (
     "encoding/json"
     "io"
     "time"
+	"math/rand"
 )
 
 var db *sql.DB
+var name_map map[string]string
 
 func main() {
+	name_map = make(map[string]string)
     var err error
     db, err=sql.Open("mysql", "root:root@tcp(db:3306)/images")
     if err != nil {
@@ -50,6 +53,7 @@ func main() {
         rest.Post("/upload",Upload),
 		rest.Get("/get",Get),
 		rest.Get("/getnum",Getnum),
+		rest.Get("/getname",Getname),
     )
     api.SetApp(router)
     fmt.Println("start api")
@@ -59,6 +63,7 @@ func main() {
 type PostedImage struct{
     Title string
     Data string
+	Post_user string
     Extension string
 }
 
@@ -67,21 +72,61 @@ type PostImage struct{
     Extension string
 }
 
+func Genid(n int) string {
+	var s = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = s[rand.Intn(len(s))]
+	}
+	return string(b)
+}
+
+func Getname(w rest.ResponseWriter,r *rest.Request){
+	token, err := r.Cookie("session_id")
+	name:="guest"
+	if err == nil{
+		id:=token.Value
+		name=name_map[id]
+		if name==""{
+			name="guest"
+		}
+		delete(name_map,id)
+		new_id := Genid(20)
+		name_map[new_id]=name
+		cookie := &http.Cookie{Name: "session_id", Value: new_id}
+		writer := w.(http.ResponseWriter)
+		http.SetCookie(writer, cookie)
+	}
+	w.WriteJson(&name)
+}
 
 func Upload(w rest.ResponseWriter,r *rest.Request){
     fmt.Println("upload")
     image:=PostedImage{}
     err:=r.DecodeJsonPayload(&image)
+	fmt.Println(image.Title)
     if err!=nil{
         fmt.Println("error")
     }
     fmt.Println(image.Extension)
     data,_:=base64.StdEncoding.DecodeString(image.Data)
 
+	if image.Post_user==""{
+		image.Post_user="guest"
+	}
     res,err:=db.Exec(
-        "INSERT INTO images (title) VALUES (?)",
+        "INSERT INTO images (title,post_user) VALUES (?,?)",
         image.Title,
+		image.Post_user,
     )
+	if image.Post_user!="guest"{
+		fmt.Println("not guest")
+		new_id := Genid(20)
+		name_map[new_id]=image.Post_user
+		cookie := &http.Cookie{Name: "session_id", Value: new_id}
+		writer := w.(http.ResponseWriter)
+		http.SetCookie(writer, cookie)
+	}
     id,err:=res.LastInsertId()
     id_str:=strconv.FormatInt(id,10)
     path:="./images/"+id_str+"."+image.Extension
@@ -91,6 +136,8 @@ func Upload(w rest.ResponseWriter,r *rest.Request){
     fmt.Println("path",path)
     fmt.Println("id",id)
     fmt.Println("Ex",image.Extension)
+	fmt.Println("title",image.Title)
+	fmt.Println("post_user",image.Post_user)
 
     post_image:=&PostImage{Data:image.Data,Extension:image.Extension}
     jsonString,err:=json.Marshal(post_image)
@@ -117,6 +164,7 @@ func Upload(w rest.ResponseWriter,r *rest.Request){
 type Image struct{
     Id int
     Title string
+	Post_user string
     Data string
     Image_path string
     Category string
@@ -149,7 +197,7 @@ func Get(w rest.ResponseWriter,r *rest.Request){
     images:=[]Image{}
     for rows.Next(){
         image:=Image{}
-        rows.Scan(&image.Id,&image.Title,&image.Image_path,&image.Category,&image.Created_at)
+        rows.Scan(&image.Id,&image.Title,&image.Post_user,&image.Image_path,&image.Category,&image.Created_at)
 		fmt.Println(image)
 
         if image.Title==""{

@@ -23,6 +23,8 @@ services:
         entrypoint: "npm start"
         networks:
             - network
+        depends_on:
+            - nginx
     backend:
         restart: always
         build:
@@ -35,6 +37,7 @@ services:
         entrypoint: "go run main"
         depends_on:
             - db
+            - nginx
     db:
         restart: always
         container_name: db
@@ -59,6 +62,25 @@ services:
         networks:
             - network
         entrypoint: "python3 main.py"
+    grafana:
+        image: grafana/grafana
+        restart: always
+        container_name: grafana
+        volumes:
+            - ./grafana/grafana:/var/lib/grafana
+            - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+        networks:
+            - network
+        user: "$PID:$GID"
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        volumes:
+            - ./prometheus:/etc/prometheus
+        command: "--config.file=/etc/prometheus/prometheus.yml"
+        restart: always
+        networks:
+            - network
 networks:
     network:
         external: true
