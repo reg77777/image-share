@@ -44,7 +44,7 @@ def deploy():
         ref = request.json['ref']
         branch = ref.split('/')[-1]
         print('branch: ',branch)
-        p=Process(target=deploy_process,args=(branch))
+        p=Process(target=deploy_process,args=(branch,))
         p.start()
         return ''
     else:
