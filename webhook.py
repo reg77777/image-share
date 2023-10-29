@@ -38,6 +38,7 @@ def deploy_process(branch):
 
 @app.route('/',methods=['POST'])
 def deploy():
+    print('aaaaaaaa')
     if verify(request.get_data(), webhook_secret, request.headers.get('X-Hub-Signature-256')):
         ref = request.json['ref']
         branch = ref.split('/')[-1]
