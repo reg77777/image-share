@@ -32,10 +32,10 @@ def deploy_process(branch):
     proc = subprocess.run(cmd)
 
     cmd = ['docker-compose','down']
-    proc = subprocess.run(pwd='image-share')
+    proc = subprocess.run(cmd,cwd='image-share')
 
     cmd = ['docker-compose','up','-d']
-    proc = subprocess.run(pwd='image-share')
+    proc = subprocess.run(cmd,cwd='image-share')
 
 @app.route('/',methods=['POST'])
 def deploy():
