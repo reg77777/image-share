@@ -2,6 +2,9 @@ from flask import Flask, request
 from dotenv import load_dotenv
 import hmac
 import os
+import hashlib
+from multiprocessing import Process
+import subprocess
 
 load_dotenv('.env')
 webhook_secret = os.environ['WEBHOOK_SECRET']
@@ -19,20 +22,17 @@ def verify(payload, secret, signature):
     return True
 
 def deploy_process(branch):
-    cmd = ['rm','-rf','image-share']
-    proc = subprocess.run(cmd)
-
-    cmd = ['git','clone','https://github.com/reg77777/image-share.git']
+    cmd = ['git','pull','--all']
     proc = subprocess.run(cmd)
 
     cmd = ['git','checkout',branch]
     proc = subprocess.run(cmd)
 
     cmd = ['docker-compose','down']
-    proc = subprocess.run(pwd='image-share')
+    proc = subprocess.run(cmd)
 
     cmd = ['docker-compose','up','-d']
-    proc = subprocess.run(pwd='image-share')
+    proc = subprocess.run(cmd)
 
 @app.route('/',methods=['POST'])
 def deploy():
@@ -40,7 +40,7 @@ def deploy():
         ref = request.json['ref']
         branch = ref.split('/')[-1]
         print('branch: ',branch)
-        p=Process(target=deploy_process,args=(branch))
+        p=Process(target=deploy_process,args=(branch,))
         p.start()
         return ''
     else:
