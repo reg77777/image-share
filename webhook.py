@@ -22,7 +22,7 @@ def verify(payload, secret, signature):
     return True
 
 def deploy_process(branch):
-    cmd = ['git','pull','all']
+    cmd = ['git','pull','--all']
     proc = subprocess.run(cmd)
 
     cmd = ['git','checkout',branch]
