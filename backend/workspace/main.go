@@ -181,7 +181,7 @@ type Image struct{
 }
 
 func Getnum(w rest.ResponseWriter,r *rest.Request){
-	fmt.Println("get num")
+	fmt.Println("get num aaa")
 	rows,err:=db.Query("SELECT COUNT(*) FROM images")
 
 	if err!=nil{
