@@ -15,6 +15,7 @@ import (
     "io"
     "time"
 	"math/rand"
+	"sync"
 )
 
 var db *sql.DB
@@ -54,6 +55,7 @@ func main() {
 		rest.Get("/get",Get),
 		rest.Get("/getnum",Getnum),
 		rest.Get("/getname",Getname),
+		rest.Get("/long-polling",LongPolling),
     )
     api.SetApp(router)
     fmt.Println("start api")
@@ -99,6 +101,9 @@ func Getname(w rest.ResponseWriter,r *rest.Request){
 	}
 	w.WriteJson(&name)
 }
+
+var msgCh = make(chan int,100)
+var wg sync.WaitGroup
 
 func Upload(w rest.ResponseWriter,r *rest.Request){
     fmt.Println("upload")
@@ -159,6 +164,10 @@ func Upload(w rest.ResponseWriter,r *rest.Request){
         string(body),
         id,
     )
+	close(msgCh)
+	wg.Wait()
+	msgCh = make(chan int,100)
+	fmt.Println("finish polling send")
 }
 
 type Image struct{
@@ -185,6 +194,15 @@ func Getnum(w rest.ResponseWriter,r *rest.Request){
 		fmt.Println(count)
 		w.WriteJson(&count)
 	}
+}
+
+func LongPolling(w rest.ResponseWriter,r *rest.Request){
+	fmt.Println("long polling")
+	wg.Add(1)
+	<-msgCh
+	fmt.Println("long polling update")
+	Get(w,r)
+	wg.Done()
 }
 
 func Get(w rest.ResponseWriter,r *rest.Request){
