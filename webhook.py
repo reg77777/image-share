@@ -22,10 +22,7 @@ def verify(payload, secret, signature):
     return True
 
 def deploy_process(branch):
-    cmd = ['rm','-rf','image-share']
-    proc = subprocess.run(cmd)
-
-    cmd = ['git','clone','https://github.com/reg77777/image-share.git']
+    cmd = ['git','pull','all']
     proc = subprocess.run(cmd)
 
     cmd = ['git','checkout',branch]
