@@ -5,6 +5,7 @@ import os
 import hashlib
 from multiprocessing import Process
 import subprocess
+import time
 
 load_dotenv('.env')
 webhook_secret = os.environ['WEBHOOK_SECRET']
@@ -22,6 +23,7 @@ def verify(payload, secret, signature):
     return True
 
 def deploy_process(branch):
+    time.sleep(1)
     cmd = ['git','pull','--all']
     proc = subprocess.run(cmd)
 
