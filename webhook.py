@@ -2,6 +2,7 @@ from flask import Flask, request
 from dotenv import load_dotenv
 import hmac
 import os
+import hashlib
 
 load_dotenv('.env')
 webhook_secret = os.environ['WEBHOOK_SECRET']
