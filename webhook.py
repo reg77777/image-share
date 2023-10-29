@@ -29,13 +29,14 @@ def deploy_process(branch):
     proc = subprocess.run(cmd)
 
     cmd = ['docker-compose','down']
-    proc = subprocess.run(cmd,cwd='image-share')
+    proc = subprocess.run(cmd)
 
     cmd = ['docker-compose','up','-d']
-    proc = subprocess.run(cmd,cwd='image-share')
+    proc = subprocess.run(cmd)
 
 @app.route('/',methods=['POST'])
 def deploy():
+    print('aaaa')
     if verify(request.get_data(), webhook_secret, request.headers.get('X-Hub-Signature-256')):
         ref = request.json['ref']
         branch = ref.split('/')[-1]
