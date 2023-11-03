@@ -40,7 +40,7 @@ def deploy_process(branch):
 def deploy():
     if verify(request.get_data(), webhook_secret, request.headers.get('X-Hub-Signature-256')):
         ref = request.json['ref']
-        branch = ref.split('/')[-1]
+        branch = ref.split('refs/heads/')[-1]
         print('branch: ',branch)
         p=Process(target=deploy_process,args=(branch,))
         p.start()
