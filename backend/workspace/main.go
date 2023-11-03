@@ -206,7 +206,7 @@ func LongPolling(w rest.ResponseWriter,r *rest.Request){
 }
 
 func Get(w rest.ResponseWriter,r *rest.Request){
-    fmt.Println("test get")
+    fmt.Println("test test get")
     rows,err:=db.Query("SELECT * FROM images")
     if err!=nil{
         fmt.Println("error")
