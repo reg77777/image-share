@@ -81,6 +81,8 @@ services:
             - ./prometheus:/etc/prometheus
         command: "--config.file=/etc/prometheus/prometheus.yml"
         restart: always
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         networks:
             - network
 networks:
